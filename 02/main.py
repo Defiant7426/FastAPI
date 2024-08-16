@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 
 app = FastAPI()
 
@@ -33,7 +33,30 @@ movies = [
 def home():
     return {"message": "Hola Mundo!!! 🌎"}
 
-@app.get("/movies/", tags=["Home"])
-def movie(year: int):
+@app.get("/movies", tags=["Movies"])
+def get_movies():
+    return movies
+
+@app.get("/movies/", tags=["Movies"])
+def get_movie_from_year(year: int):
     return [movie for movie in movies if movie["year"] == year]
 
+
+@app.post("/movies", tags=["Movies"])
+def create_movie(
+    title: str = Body(...), # cuando se pone ... se indica que es requerido
+    overview: str = Body(...),
+    year: int = Body(...),
+    rating: float = Body(...),
+    genre: str = Body(...)
+):
+    movie = {
+        "id": len(movies) + 1,
+        "title": title,
+        "overview": overview,
+        "year": year,
+        "rating": rating,
+        "genre": genre
+    }
+    movies.append(movie)
+    return movie
